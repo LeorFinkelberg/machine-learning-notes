@@ -1,0 +1,1 @@
+В MLServer _каждая модель_ может быть сконфигурирована _независимо_. Обычно конфигурация модели описывается в файле `model-settings.json`. Детали можно найти на странице документации [Model Settings](https://mlserver.readthedocs.io/en/latest/reference/model-settings.html#reference-model-settings--page-root).

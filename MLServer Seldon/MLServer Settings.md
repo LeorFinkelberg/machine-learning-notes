@@ -1,0 +1,1 @@
+MLServer может быть сконфигурирован с помощью файла `settings.json`, расположенного в корне директории, из-под которой запускается MLServer. Детали можно найти на странице документации [MLServer Settings](https://mlserver.readthedocs.io/en/latest/reference/settings.html).

@@ -1,0 +1,1 @@
+https://dagshub.com/blog/best-machine-learning-workflow-and-pipeline-orchestration-tools/ В статье сравнивается несколько инструментов оркестрации

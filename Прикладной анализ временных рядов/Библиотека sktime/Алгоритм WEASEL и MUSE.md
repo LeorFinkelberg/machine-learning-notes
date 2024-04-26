@@ -1,0 +1,1 @@
+Реализацию алгоритма WEASEL можно найти [здесь](https://www.sktime.net/en/latest/api_reference/auto_generated/sktime.classification.dictionary_based.WEASEL.html#weasel), а реализацию MUSE (WEASEL-MUSE) -- [здесь](https://www.sktime.net/en/latest/api_reference/auto_generated/sktime.classification.dictionary_based.MUSE.html).

@@ -1,0 +1,1 @@
+https://dagster.io/vs/dagster-vs-prefect Краткий сравнительный анализ Dagster и Prefect 
