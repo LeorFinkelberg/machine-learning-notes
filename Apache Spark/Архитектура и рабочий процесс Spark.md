@@ -91,6 +91,23 @@ df.write.jdbc(
 spark.stop()
 ```
 
+Прочитать CSV-файл можно используя связку
+```python
+spark.read \
+    .csv(
+        header=True,
+        inferSchema=True,
+        path="./path-to-file.csv"
+    )
+```
+или так
+```python
+spark.read \
+    .format("csv") \
+    .options(header=True, inferSchema=True) \
+    .load("./path-to-file.csv")
+```
+
 Запустить приложение можно так
 ```bash
 (spark) $ export SPARK_CLASSPATH=~/Documents/postgres-jdbc/postgresql-42.7.3.jar
