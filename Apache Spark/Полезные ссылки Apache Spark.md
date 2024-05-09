@@ -1,1 +1,2 @@
 - https://github.com/jgperrin/net.jgp.books.spark.ch01 Ссылка на первую главу книги "Жан-Жорж Перрен -- Spark в действии" (ссылки на другие главы книги нужно искать в главном репозитории)
+- https://spark.apache.org/docs/latest/submitting-applications.html Submitting Applications
