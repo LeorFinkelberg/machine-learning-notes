@@ -112,6 +112,8 @@ spark.read \
 ```bash
 (spark) $ export SPARK_CLASSPATH=~/Documents/postgres-jdbc/postgresql-42.7.3.jar
 (spark) $ spark-submit --driver-class-path ${SPARK_CLASSPATH} run.py
+# Или можно использовать флаг --jars
+(spark) $ spark-submit --jars ${SPARK_CLASSPATH} run.py
 ```
 
 Spark прочитать csv-файл, создать новый столбец, представляющий результат конкатенации двух столбцов и записать новый кадр данных в таблицу `ch02` базы данных `spark_labs` PostgreSQL.
