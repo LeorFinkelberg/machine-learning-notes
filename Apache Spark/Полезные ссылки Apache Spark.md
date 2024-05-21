@@ -1,2 +1,9 @@
+- https://books.japila.pl/apache-spark-internals/ The Internals of Spark Core
+- https://books.japila.pl/spark-sql-internals/ The Internals of Spark SQL
+- https://books.japila.pl/spark-structured-streaming-internals/ The Internals of Spark Structured Streaming
+- https://jaceklaskowski.github.io/spark-kubernetes-book/ The Internals os Spark on Kubernetes
+- https://books.japila.pl/kafka-internals/ The Internals of Apache Kafka
+- https://books.japila.pl/kafka-streams-internals/ The Internals of Kafka Streams
+- https://books.japila.pl/ksqldb-internals/ The Internals of ksqlDB
 - https://github.com/jgperrin/net.jgp.books.spark.ch01 Ссылка на первую главу книги "Жан-Жорж Перрен -- Spark в действии" (ссылки на другие главы книги нужно искать в главном репозитории)
 - https://spark.apache.org/docs/latest/submitting-applications.html Submitting Applications
