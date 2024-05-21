@@ -136,15 +136,26 @@ from pyspark.sql import functions as F
 
 @F.udtf(returnType="word: string")
 class WordSplitter:
+    def __init__(self) -> None:
+        self.prefix = 0
+
     def eval(text: str) -> t.Iterator[str]:
         for word in text.split():
-            yield word.strip(),  # одноэлементый кортеж
+            yield f"{self.prefix}-{word.strip()}",  # одноэлементый кортеж
+
+    def termination(self) -> t.Iterator[str]:
+        yield "Done",  # одноэлементный кортеж
 
 spark.udtf.register("split_words", WordSplitter)
 
 spark.sql("SELECT * FROM split_words('hello word')") \
     .withColumnRenamed("world", "result").show()
 # Вернет таблицу из двух строк
+
+spark.sql(
+	"SELECT * FROM VALUES ('Apache Spark'), ('Fortran Scala') table(text),"
+	"LATERAL split_words(text)"
+)
 ```
 
 UDTF можно использовать вместе с латеральными подзапросами, которые, как известно, позволяют ссылаться на столбцы и псевдонимы в контексте ключевого слова `FROM`
