@@ -1,3 +1,4 @@
+Детали можно найти на странице документации https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/functions.html.  
 ### `.explode()`
 
 Возвращает новую строку для каждого элемента в целевом массиве или отображении. Если для новых столбцов не указан псеводним, то метод использует имя `col` в случае массива и имена `key` и `value` в случае отображения.
@@ -52,3 +53,14 @@ df.select("col", "mapfield", F.explode_outer("intlist").alias("intlist")).show()
 | 100|{foo2 -> bar2, foo1 -> bar1}|NULL|  # <= NB
 +---+-----------------------------+----+
 ```
+
+### .when()
+
+Пример
+```python
+from pyspark.sql import functions as F
+
+df = spark.range(3)
+df.select(F.when(df.id) == 2, 3).otherwise(4).alias("age")).show()
+```
+
