@@ -54,7 +54,7 @@ df.select("col", "mapfield", F.explode_outer("intlist").alias("intlist")).show()
 +---+-----------------------------+----+
 ```
 
-### .when()
+### `.when()`
 
 Пример
 ```python
@@ -62,5 +62,13 @@ from pyspark.sql import functions as F
 
 df = spark.range(3)
 df.select(F.when(df.id) == 2, 3).otherwise(4).alias("age")).show()
-```
 
+df.select(
+	F.when(F.col("col3") == "green", "GREEN").otherwise("---").aliase("result")
+).show()
+
+df.select(
+	F.when((F.col("col3") > 0) & (F.col("col1") > 0), "bla") \
+	    .otherwise("not bla").alias("res")
+).show()
+```
