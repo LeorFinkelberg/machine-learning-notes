@@ -25,6 +25,29 @@ $ spark-submit --version
 --packages io.delta:delta-spark_2.12:3.1.0
 ```
 
+Для динамического построения имени пакет для Delta Lake, можно воспользоваться следующим кодом
+```python
+import importlib_metadata
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .appName("...") \
+    .master("local[*]") \
+    .getOrCreate()
+
+# Scala version
+_scala_version = spark.sparkContext \
+    ._gateway.jvm.scala.util.Properties.versionString()
+# '2.12'
+scala_version: str = ".".join(_scala_version.split())[-1].split(".")[:-1]  
+
+# Delta Lake version
+delta_lake_version: str = importlib_metadata.version("delta_lake") # '3.1.0'
+
+# io.delta:delta-spark_2.12:3.1.0 
+delta_package = f"io.delta:delta-spark_{scala_version}:{delta_lake_version}"
+```
+
 Для проведения тестов и в целом для конфигурирования Spark-сессии для работы с Delta Lake, на странице https://docs.delta.io/3.2.0/quick-start.html#python советуют установить _совместимую_  версию `delta-spark`
 ```bash
 $ pip install delta-spark==3.1.0
