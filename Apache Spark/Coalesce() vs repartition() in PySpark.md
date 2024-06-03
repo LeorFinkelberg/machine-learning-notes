@@ -70,6 +70,8 @@ df.write.mode("overwrite").csv("/tmp/partitions.csv")
 
 В этом примере будет создано 5 партиций (количество задается через `master("local[5]")`) и затем данные будут распределены по этим 5 партициям.
 
+Когда Spark-сессия запускается с локальным ведущим узлом, использующим все доступные ресурсы, то есть `.master("local[*]")`, то кадры данных будут разбиваться на число партиций, равное числу вычислительных блоков (ядер процессора) -- `multiprocessing.cpu_count()`.
+
 #### DataFrame repartition()
 
 Метод `.repartition()` перераспределяет данные равномерно по заданному числу партиций, оптимизируя параллелизм и утилизацию ресурсов. Метод вызывает полную перетасовку данных и это полезно при подготовке схемы для последующих (нижестоящих) операций (downstream operations), таких как _объединения_ (joins) и _агрегации_ (aggregations).
@@ -112,6 +114,53 @@ df4.rdd.getNumPartitions()
 | Data Movement        | Распределяет данные _равномерно_, выравнивая партиции по мощности (размеру)                                       | Может создавать партиции, несбалансированные по мощности                                                               |
 | Use Cases            | Полезен, когда требуется получить сбалансированные по мощности партиции                                           | Полезен, когда требуется уменьшить число партиций _без накладных расходов на полную перетасовку данных_ (full shuffle) |
 
+Чтобы по ошибке не использовать метод `.repartition()` в случаях, когда требуется снизить число партиций, можно написать функцию, которая для редуцирования числа партиций будет использовать метод `.coalesce()`, а для случаев, когда требуется увеличить количество партиций (пусть и с полной перетасовкой) -- метод `.repartition()`
+```python
+import typing as t
+from pyspark.sql import dataframe
+
+SparkDataFrame: t.TypeAliase = dataframe.DataFrame
+
+def make_repartition(
+	df: SparkDataFrame,
+    /,  # параметр `df` передается строго позиционно
+    *,  # параметр `target_n_partitions` передается строго поименно
+	target_n_partitions: int
+) -> SparkDataFrame:
+    current_n_partitions = df.rdd.getNumPartitions()
+    _msg = (
+        f"-> Current number of partitions: {current_n_partitions}.\n"
+        f"-> Target number of partitions: {target_n_partions}"
+    )
+
+    if current_n_partitions == target_n_partitions:
+        raise <CustomException>("...")
+
+    if target_n_partitions < current_n_partitions:
+        print(f"{_msg}. \nREMARK: Using `.coalesce()` method ...")
+        df = df.coalesce(target_n_partitions)
+    else:
+        print(f"{_msg}. \nREMARK: Using `.repartition()` method ...")
+        df = df.repartition(target_n_partitions)
+
+    return df
 
 
+df: SparkDataFrame = ...
+df.rdd.getNumPartitions()  # 8
 
+repar_df = make_repartition(df, target_n_partitions=4)
+repar_df.rdd.getNumPartitions()  # 4
+repar_df.rdd.saveAsText("/tmp/partitions/")
+```
+
+В директории `/tmp/partitions` будут лежать фрагменты
+```bash
+$ tree -h /tmp/partitions
+part-00000
+part-00001
+part-00002
+part-00003
+...
+_SUCCESS
+```
