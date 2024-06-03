@@ -72,3 +72,33 @@ df.select(
 	    .otherwise("not bla").alias("res")
 ).show()
 ```
+
+Пусть требуется создать в кадре данных новый столбец, содержащий значения `NULL` в тех строках, в которых атрибут `id` принимает одно из следущих значений: 3, 5 или 8. Прочие значения нового столбца выставляются в 1
+```python
+# PySpark
+df.withColumn("new_col", F.when(F.col("id").isin([3, 5, 8]), None).otherwise(F.lit(1)))
+```
+
+В `pandas` эту задачу можно было бы решить, например, так
+```python
+df["new_col"] = 1
+df.loc[[3, 5, 8], "new_col"] = np.nan
+```
+### `.coalesce()`
+
+_Функция_ `F.coalesce()` (==а не метод!==) в Spark выполняет ту же работу, что и метод `.fillna()` в `pandas`. Функция `.coalesce()` принимает объект столбца, в котором нужно заменить пропущенные значения (`NULL`), и либо литератльное значение (`F.lit()`), либо объект другого столбца, значения которого будут использоваться вместо `NULL`
+```python
+df.withColumn(
+	"target_col",
+	F.coalesce(F.col("target_col"), F.lit(0))
+)
+df.withColumn(
+	"target_col",
+	F.coalesce(F.col("target_col"), F.col("another_col"))
+)
+```
+
+А в `pandas` эту задачу можно было бы решать так
+```python
+df["target_col"] = df["target_col"].fillna(0)
+```
