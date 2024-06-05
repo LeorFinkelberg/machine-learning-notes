@@ -54,7 +54,7 @@ df.select("col", "mapfield", F.explode_outer("intlist").alias("intlist")).show()
 +---+-----------------------------+----+
 ```
 
-### .when()
+### `.when()`
 
 Пример
 ```python
@@ -62,5 +62,52 @@ from pyspark.sql import functions as F
 
 df = spark.range(3)
 df.select(F.when(df.id) == 2, 3).otherwise(4).alias("age")).show()
+
+df.select(
+	F.when(F.col("col3") == "green", "GREEN").otherwise("---").aliase("result")
+).show()
+
+df.select(
+	F.when((F.col("col3") > 0) & (F.col("col1") > 0), "bla") \
+	    .otherwise("not bla").alias("res")
+).show()
 ```
 
+Пусть требуется создать в кадре данных новый столбец, содержащий значения `NULL` в тех строках, в которых атрибут `id` принимает одно из следущих значений: 3, 5 или 8. Прочие значения нового столбца выставляются в 1
+```python
+# PySpark
+df.withColumn("new_col", F.when(F.col("id").isin([3, 5, 8]), None).otherwise(F.lit(1)))
+```
+
+В `pandas` эту задачу можно было бы решить, например, так
+```python
+df["new_col"] = 1
+df.loc[[3, 5, 8], "new_col"] = np.nan
+```
+### `.coalesce()`
+
+_Функция_ `F.coalesce()` (==а не метод!==) в Spark выполняет ту же работу, что и метод `.fillna()` в `pandas`, но реагирует на пропущенные значения, представленные как `NULL` (если нужно заполнять пропуски , представленные как `NaN`, то следует воспользоваться функцией `.nanval`). Функция `.coalesce()` принимает объект столбца, в котором нужно заменить пропущенные значения (`NULL`), и либо литератльное значение (`F.lit()`), либо объект другого столбца, значения которого будут использоваться вместо `NULL`
+```python
+# функция .coalesce() реагирует на NULL
+df.withColumn(
+	"target_col",
+	F.coalesce(F.col("target_col"), F.lit(0))
+)
+df.withColumn(
+	"target_col",
+	F.coalesce(F.col("target_col"), F.col("another_col"))
+)
+```
+
+А в `pandas` эту задачу можно было бы решать так
+```python
+df["target_col"] = df["target_col"].fillna(0)
+```
+
+### `.nanvl()`
+
+Функция `.nanvl()` похожа на функцию `.coalesce()`, но при заполнении пропусков реагирует не на `NULL` (как функция `.coalesce()`), а на `NaN`
+```python
+df.withColumn("target_column", F.nanval(F.col("col1"), F.lit(0)))
+df.withColumn("target_column", F.nanval(F.col("col1"), F.col("another_column")))
+```
