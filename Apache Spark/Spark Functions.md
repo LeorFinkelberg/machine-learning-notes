@@ -61,7 +61,7 @@ df.select("col", "mapfield", F.explode_outer("intlist").alias("intlist")).show()
 from pyspark.sql import functions as F
 
 df = spark.range(3)
-df.select(F.when(df.id) == 2, 3).otherwise(4).alias("age")).show()
+df.select(F.when(df.id == 2, 3).otherwise(4).alias("age")).show()
 
 df.select(
 	F.when(F.col("col3") == "green", "GREEN").otherwise("---").aliase("result")
@@ -76,13 +76,34 @@ df.select(
 Пусть требуется создать в кадре данных новый столбец, содержащий значения `NULL` в тех строках, в которых атрибут `id` принимает одно из следущих значений: 3, 5 или 8. Прочие значения нового столбца выставляются в 1
 ```python
 # PySpark
-df.withColumn("new_col", F.when(F.col("id").isin([3, 5, 8]), None).otherwise(F.lit(1)))
+df.withColumn(
+	"new_col",
+	F.when(F.col("id").isin([3, 5, 8]), None
+).otherwise(F.lit(1)))
 ```
 
 В `pandas` эту задачу можно было бы решить, например, так
 ```python
 df["new_col"] = 1
 df.loc[[3, 5, 8], "new_col"] = np.nan
+```
+
+Если требуется вставить `NaN` в разные строки разных столбцов кадра данных, то можно использовать туже самую цепочку вызовов
+```python
+df.withColumn(
+	"x",
+	F.when(
+	    F.col("id").isin([3, 9]),
+	    F.lit(float("nan")
+	)
+).otherwise(F.col("x")) \
+    .withColumn(
+        "y",
+        F.when(
+            F.col("id").isin([0, 10]),
+            F.lit(float("nan"))
+        )
+    )
 ```
 ### `.coalesce()`
 
