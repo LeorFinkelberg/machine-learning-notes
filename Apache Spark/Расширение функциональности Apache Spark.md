@@ -51,6 +51,21 @@ def make_sum(col1, col2) -> float:
 df.select("id", make_sum("col1", "col2")).show()
 ```
 
+UDF можно применять и в контексте PySpark SQL, но предварительно пользовательскую функцию требуется зарегистрировать
+```python
+# Обычная Python-функция
+def convert_string_to_code(col_name: str) -> int:
+    ...
+
+spark.udf.register(
+	"convert_string_to_code",
+	convert_string_to_code,
+	IntegerType()
+)
+
+spark.sql("select x, convert_string_to_code(color) from my_table;")
+```
+
 ### UDAF 
 
 Напрямую Spark User-Defined Aggregate Functions (_UDAF_) не поддерживает, поэтому приходится выполнять агрегацию вручную

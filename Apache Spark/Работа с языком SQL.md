@@ -51,3 +51,8 @@ if __name__ == "__main__":
 ```python
 spark.table("geodata")
 ```
+
+Получить схему таблицы можно так
+```python
+spark.sql("describe table_name;")
+```
