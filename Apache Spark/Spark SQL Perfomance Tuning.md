@@ -31,7 +31,7 @@ ANALYZE TABLE table_name COMPUTE STATISTICS FOR COLUMNS col1, col2
 ```
 ### Use Optimal value for Shuffle Partitions
 
-Когда мы выполняем операцию, которая вызывает перетасовку (агрегацию или соединение), Spark по умолчанию создает 200 партиций. Так как по умолчанию
+Когда мы выполняем операцию, которая вызывает _перетасовку_ -- shuffling -- `groupByKey()`, `reduceByKey()`, `join()`, `groupBy()` etc. -- Spark по умолчанию создает 200 партиций. Так как по умолчанию
 ```scala
 spark.conf.set("spark.sql.shuffle.partitions", 200)
 ```
@@ -40,6 +40,11 @@ spark.conf.set("spark.sql.shuffle.partitions", 200)
 ```scala
 spark.conf.set("spark.sql.shuffle.partitions", 30) //Default value is 200
 ```
+
+Перетасовка в Spark (Spark Shuffle) -- это очень затратная операция, так как:
+- вызывает дисковый ввод-вывод,
+- сериализацию-десериализацию,
+- сетевой ввод-вывод.
 ### Use Broadcast Join when your Join data can fit in memory
 
 Broadcast-hash-join -- эффективная стратегия соединения, но она может быть применена только, если одна из соединяемых таблиц значительно меньше другой и помещается в памяти в пределах порога, который можно задать так
@@ -68,7 +73,7 @@ spark.conf.set("spark.sql.adaptive.enabled", true)
 ```
 ### Spark 3.0  -- Coalescing Post Shuffle Partitions
 
-В Spark 3.0 после каждого этапа (stage) задания (job), Spark динамически определяет оптимальное число партиций на основе метрика завершенных этапов (stage). Включить это можно так
+В Spark 3.0 после каждого этапа (stage) задания (job), Spark динамически определяет оптимальное число партиций на основе метрик завершенных этапов (stage). Включить это можно так
 ```scala
 spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", true)
 ```
