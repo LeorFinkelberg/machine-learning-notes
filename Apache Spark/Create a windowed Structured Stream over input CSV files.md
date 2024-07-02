@@ -47,3 +47,8 @@ query = (
 )
 query.awaitTermination()
 ```
+
+Вывести конфигурацию Spark-сессии
+```python
+spark.sparkContext.getConf().getAll()
+```
